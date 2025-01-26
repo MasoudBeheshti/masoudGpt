@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{% static 'css/bootstrap.rtl.css' %}">
+	<link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+	<link rel="stylesheet" href="{% static 'css/asRange.css' %}">
+	<link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+    <title>  Fati Gpt | Register</title>
+</head>
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-10 col-md-7 col-lg-5 signup-login-box"><!-- start signup & login box -->
+                <img src="{% static 'images/logo.png' %}">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="input-group signup-login-form"><!-- start name input -->
+                        
+                        <input type="text" class="form-control form-control-lg signup-login-input" placeholder="username" name='username'>
+                    </div><!-- end name input -->
+                    {% if form.username.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.username.errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="input-group signup-login-form"><!-- start last name input -->
+                        
+                        <input type="text" class="form-control form-control-lg signup-login-input" placeholder="email" name='email'>
+                    </div><!-- end last name input -->
+                    {% if form.email.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.email.errors }}
+                        </div>
+                    {% endif %}
+
+
+
+                    <div class="input-group signup-login-form password"><!-- start password input -->
+                        
+                        <input type="password" class="form-control form-control-lg signup-login-input" placeholder="password" name='password'>
+                    </div><!-- end password input -->
+                    {% if form.password.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.password.errors }}
+                        </div>
+                    {% endif %}
+                    <div class="input-group signup-login-form password"><!-- start password input -->
+                        
+                        <input type="password" class="form-control form-control-lg signup-login-input" placeholder="password repeat" name='password2'>
+                    </div><!-- end password input -->
+                    {% if form.password2.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.password2.errors }}
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-danger d-block font-12 mx-auto signup-btn mb-4"><!-- signup btn -->
+                        Sign up
+                    </button>
+
+                   <div class="d-flex justify-content-center">You already have an account?<span style="margin-left: 4px;"><a href="{% url 'chatApp:login' %}" class="text-warning">  Login </a></span></div> 
+                   {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                   
+                </form>
+            </div><!-- end signup & login box -->
+        </div>
+    </div>
+
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+	<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script> 
+</body>
+</html>
