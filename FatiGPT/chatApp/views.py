@@ -4,28 +4,34 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.shortcuts import render,redirect,HttpResponse
-from config.settings import OPEN_API_KEY
-from openai import OpenAI
+
+from django.conf import settings
+import os
+import openai
 from .models import Chat
 from .forms import *
 
-# Create your views here.
+# Create your views here
+
+if settings.OPEN_API_KEY:
+    openai.api_key = settings.OPEN_API_KEY
+else:
+    raise Exception('OpenAI API Key not found')
+
+
 def ask_openai(message):
-    openai_api_key = OPEN_API_KEY # define your OPEN_API_KEY in settings.py
-    client = OpenAI(api_key=openai_api_key)
-    response = client.chat.completions.create(
+    query = openai.ChatCompletion.create(
         model = "gpt-4o-mini",
-        # max_tokens=150,
         n=1,
         stop=None,
         temperature=0.7,
         messages=[
-            {"role": "system", "content": "You are a helpful assistant named Fati-GPT."},
+            {"role": "system", "content": "You are a helpful assistant named Fati-GPT designed by Masoud Beheshti. remember your name and your designers name"},
             {"role": "user", "content": message},
         ]
     )
-    answer = response.choices[0].message.content.strip()
-    return answer
+    response = query.get('choices')[0]['message']['content']
+    return response
 
 
 @login_required
@@ -34,11 +40,11 @@ def chatbot(request):
     if request.method == 'POST':
         message = request.POST.get('message')
         response = ask_openai(message)
-
         chat = Chat(user=request.user, message=message, response=response, created_at=timezone.now)
         chat.save()
         return JsonResponse({'message': message, 'response': response})
     return render(request, 'chatbot.html', {'chats': chats})
+
 
 
 def register(request):
@@ -63,4 +69,4 @@ def delete_massages(request):
     chats=Chat.objects.filter(user=request.user)
     if chats.count()>0:
         chats.delete()
-    return render(request, 'chatbot.html', {'chats': chats})
+    return redirect('chatApp:chatbot')
