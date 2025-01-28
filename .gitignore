@@ -133,6 +133,7 @@ celerybeat.pid
 .env
 .venv
 .genv
+.FatiGPT/config/settings.py
 env/
 venv/
 genv/

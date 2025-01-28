@@ -62,6 +62,15 @@
     display: flex;
     flex-direction: column;
   }
+  .message-content-container {
+  position: relative;
+  }
+
+  .btn-copy {
+    position: absolute;
+    top: -30px;
+    right: 5px;
+  }
 </style>
 {% endblock %}
 
@@ -71,8 +80,8 @@
 <div class="chat-container">
 
   <div class="card flex-grow-1">
-    
-    <div class="card-header text-white bg-danger"><a class="navbar-brand"><img src="{% static 'images/logo2.png' %}" style="border-radius: 100%;"></a>  <b>Welcome, {{user.username}} </b><a style="color: white;" href="{% url 'chatApp:logout' %}"> (Logout)</a> <a style="color: yellow;" href="{% url 'chatApp:delete_massages' %}">Clear History</a> 
+
+    <div class="card-header text-white bg-danger"><a class="navbar-brand"><img src="{% static 'images/logo2.png' %}" style="border-radius: 100%;"></a>  <b>Welcome, {{user.username}} </b><a style="color: white;" href="{% url 'chatApp:logout' %}"> (Logout)</a> <a style="color: yellow;" href="{% url 'chatApp:delete_massages' %}">Clear History</a>
     </div>
     <div></div>
     <div class="card-body messages-box">
@@ -110,8 +119,11 @@
             <div class="message-sender">
               <b>Fati GPT</b>
             </div>
-            <div class="message-content">
-              {{chat.response|linebreaks}}
+            <div class="message-content-container">
+              <div class="message-content">
+                {{chat.response|linebreaks}}
+              </div>
+              <button class="btn-copy btn"><i class="fa fa-copy "><img width="16" height="16" src="https://img.icons8.com/ios-glyphs/30/copy.png" alt="copy"/></i> copy</button>
             </div>
           </div>
         </li>
@@ -141,15 +153,15 @@
   const messagesList = document.querySelector('.messages-list');
   const messageForm = document.querySelector('.message-form');
   const messageInput = document.querySelector('.message-input');
-  
+
   messageForm.addEventListener('submit', (event) => {
       event.preventDefault();
-  
+
       const message = messageInput.value.trim();
       if (message.length === 0) {
           return;
       }
-  
+
       // Create a message item for the user's message
       const messageItem = document.createElement('li');
       messageItem.classList.add('message', 'sent');
@@ -163,10 +175,10 @@
           </div>
         </div>`;
       messagesList.appendChild(messageItem);
-  
+
       // Clear the input field
       messageInput.value = '';
-  
+
       // Show "thinking..." message
       const thinkingItem = document.createElement('li');
       thinkingItem.classList.add('message', 'received');
@@ -180,10 +192,10 @@
           </div>
         </div>`;
       messagesList.appendChild(thinkingItem);
-  
+
       // Scroll to the bottom of the messages
       messagesList.scrollTop = messagesList.scrollHeight;
-  
+
       // Send the message to the server
       fetch('', {
           method: 'POST',
@@ -197,18 +209,32 @@
       .then(data => {
           // Replace "Thinking..." message with the actual response
           const response = data.response.replace(/\n/g, '<br>'); // Replace line breaks with <br>
-          
+
           // Replace the last message (thinking) with the actual response
           thinkingItem.innerHTML = `
             <div class="message-text">
               <div class="message-sender">
                 <b>Fati GPT</b>
               </div>
-              <div class="message-content">
-                ${response}
+              <div class="message-content-container">
+                <div class="message-content">
+                  ${response}
+                </div>
+                <button class="btn-copy btn"><i class="fa fa-copy "><img width="16" height="16" src="https://img.icons8.com/ios-glyphs/30/copy.png" alt="copy"/></i> copy</button>
               </div>
             </div>
           `;
+        // Add event listener to the new copy button
+        const newCopyButton = thinkingItem.querySelector('.btn-copy');
+        newCopyButton.addEventListener('click', () => {
+            const messageContent = newCopyButton.previousElementSibling.textContent;
+            const textarea = document.createElement('textarea');
+            textarea.value = messageContent;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        });
       })
       .catch(error => {
           console.error('Error:', error);
@@ -225,7 +251,32 @@
           `;
       });
   });
-  
+  // Select all copy buttons
+const copyButtons = document.querySelectorAll('.btn-copy');
+
+// Add click event listener to each copy button
+copyButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    // Get the text content of the message
+    const messageContent = button.previousElementSibling.textContent;
+
+    // Create a temporary textarea element to copy the text
+    const textarea = document.createElement('textarea');
+    textarea.value = messageContent;
+    document.body.appendChild(textarea);
+
+    // Select and copy the text
+    textarea.select();
+    document.execCommand('copy');
+
+    // Remove the temporary textarea
+    document.body.removeChild(textarea);
+
+    // Optionally, provide feedback to the user that the text has been copied
+    // For example, you can show a tooltip or a message
+  });
+});
+
 
 </script>
 
